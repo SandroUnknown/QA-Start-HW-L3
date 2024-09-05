@@ -11,15 +11,15 @@ import static com.codeborne.selenide.Selenide.open;
 public class AutomationPracticeFormTests {
 
     //~values
-    private String firstName = "Anna";
-    private String lastName = "Karenina";
-    private String userEmail = "anna@karenina.com";
-    private String userNumber = "9031112233";
-    private String subjectsInput = "Maths";
-    private String subjectsInput2 = "Computer Science";
-    private String picDirectory = "C:/";                    // Для теста размещал картинку на рабочем столе, по адресу: "C:/Users/<USER_NAME>/Desktop/"
-    private String picName = "ava.png";
-    private String currentAddress = "Moscow, Russia";
+    private final String firstName = "Anna";
+    private final String lastName = "Karenina";
+    private final String userEmail = "anna@karenina.com";
+    private final String userNumber = "9031112233";
+    private final String subjectsInput = "Maths";
+    private final String subjectsInput2 = "Computer Science";
+    private final String picDirectory = "C:/";                    // Для теста размещал картинку на рабочем столе, по адресу: "C:/Users/<USER_NAME>/Desktop/"
+    private final String picName = "ava.png";
+    private final String currentAddress = "Moscow, Russia";
 
 
     @BeforeAll
@@ -97,7 +97,7 @@ public class AutomationPracticeFormTests {
         $(".table-responsive").shouldHave(text("Female"));
         $(".table-responsive").shouldHave(text("9031112233"));
         $(".table-responsive").shouldHave(text("31 July,1991"));
-        $(".table-responsive").shouldHave(text("Maths, Computer Science"));
+        $(".table-responsive").shouldHave(text(subjectsInput + ", " + subjectsInput2));
         $(".table-responsive").shouldHave(text("Reading, Music"));
         $(".table-responsive").shouldHave(text(picName));
         $(".table-responsive").shouldHave(text(currentAddress));
