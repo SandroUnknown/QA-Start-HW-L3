@@ -2,47 +2,68 @@ import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
+// [fixed] 1. Давай пока не будем забегать вперёд и делить тест на отдельные методы. В уроке по Page Object расскажут, как сделать это правильно
+
+// [fixed] 2. Configuration.holdBrowserOpen = true; - перед коммитом удаляем/закомменчиваем/меняем на false, особенно критично будет при удалённом запуске тестов.
+// Данная конфигурация полезна при разработке и отладке тестов, но в готовом проекте её быть не должно.
+// Особенно при удалённом запуске тестов - браузер останется висеть открытым и будет занимать ресурсы, которые можно было бы использовать.
+
+// [fixed] 3. Для загрузки картинки рекомендуется использование:
+// $("#uploadPicture").uploadFromClasspath(picName);
+// В таком случае картинка будет подтягиваться по имени файла из папки resources, которую нужно создать на одном уровне с папкой java.
+// Картинку обязательно нужно закоммитить, тесты должны работать, что называется, "из коробки", без предварительных правок с моей стороны
+
+// [fixed] 4. В названии методов в java принято использовать глагол, также принято ставить его на первое место
+
+// [fixed] 5. Выбор пола и хобби по порядковому номеру нестабилен.
+// К порядковым номерам стоит привязываться только в том случае, если другого способа нет,
+// т.к. порядок элементов на странице может поменяться в любой момент, и тесты упадут.
+// Лучше сделать поиск по тексту в конкретном месте страницы, в данном случае в #genterWrapper и в #hobbiesWrapper.
+
+// [fixed] 6. Для выбора штата и города - аналогично, поиском по тексту в $("#stateCity-wrapper")
+
+// [in work] 7. Проверки можно улучшить, добавив проверку соответствия содержимого колонок друг другу
+// (не обязательно сейчас, это можно будет сделать позже по мере развития проекта)
+
+
 public class AutomationPracticeFormTests {
-
-    //~values
-    private final String firstName = "Anna";
-    private final String lastName = "Karenina";
-    private final String userEmail = "anna@karenina.com";
-    private final String userNumber = "9031112233";
-    private final String subjectsInput = "Maths";
-    private final String subjectsInput2 = "Computer Science";
-    private final String picDirectory = "C:/";                    // Для теста размещал картинку на рабочем столе, по адресу: "C:/Users/<USER_NAME>/Desktop/"
-    private final String picName = "ava.png";
-    private final String currentAddress = "Moscow, Russia";
-
 
     @BeforeAll
     static void beforeAll() {
         Configuration.browserSize = "1920x1080";
         Configuration.baseUrl = "https://demoqa.com";
         Configuration.pageLoadStrategy = "eager";
-        Configuration.holdBrowserOpen = true;
+        //Configuration.holdBrowserOpen = true;
         Configuration.timeout = 8000;
     }
 
-
     @Test
-    void myFormTest() {
+    void testForm() {
+        //1. values
+        String firstName = "Anna";
+        String lastName = "Karenina";
+        String userEmail = "anna@karenina.com";
+        String gender = "Female";
+        String phoneNumber = "9031112233";
+        //дата рождения??
+        String subjectsInput = "Maths";
+        String subjectsInput2 = "Computer Science";
+        String hobby = "Reading";
+        String hobby2 = "Music";
+        String picName = "ava.png";
+        String currentAddress = "Moscow, Russia";
+        String state = "Haryana";
+        String city = "Panipat";
+
+        //2. открываем url
         open("/automation-practice-form");
 
-        dataFilling();
-        dataCheck();
-    }
-
-
-    private void dataFilling() {
-
+        //3. заполнение данными
         //name (first + second)
         $("#firstName").setValue(firstName);
         $("#lastName").setValue(lastName);
@@ -51,11 +72,10 @@ public class AutomationPracticeFormTests {
         $("#userEmail").setValue(userEmail);
 
         //gender
-        $("#gender-radio-2").parent().click();      //оба варианта работают, как правильней?
-        $("[for=gender-radio-2]").click();          //оба варианта работают, как правильней?
+        $("#genterWrapper").$(byText(gender)).click();    //в верстве опечатка - genTer.
 
         //mobile num
-        $("#userNumber").setValue("9031112233");
+        $("#userNumber").setValue(phoneNumber);
 
         //date of birth
         $("#dateOfBirthInput").click();                                                //open listbox
@@ -68,39 +88,40 @@ public class AutomationPracticeFormTests {
         $("#subjectsInput").setValue(subjectsInput2).pressEnter();
 
         //hobbies
-        $("#hobbies-checkbox-2").parent().click();     //оба варианта работают, как правильней?
-        $("[for=hobbies-checkbox-3]").click();         //оба варианта работают, как правильней?
+        $("#hobbiesWrapper").$(byText(hobby)).click();
+        $("#hobbiesWrapper").$(byText(hobby2)).click();
 
         //picture
-        $("#uploadPicture").uploadFile(new File(picDirectory + picName));
+        $("#uploadPicture").uploadFromClasspath(picName);
 
         //address
         $("#currentAddress").setValue(currentAddress);
 
         //state
         $("#state").click();
-        $("#react-select-3-option-2").click();      //честно списал, сам не смог "докопаться" до этого селектора - в инспекторе при клике на нужные блок (чтобы его раскрыть) слетает фокус с выпадающей менюшки, и сам блок пропадает.
+        $("#stateCity-wrapper").$(byText(state)).click();
+
 
         //city
         $("#city").click();
-        $("#react-select-4-option-1").click();      //честно списал, сам не смог "докопаться" до этого селектора - в инспекторе при клике на нужные блок (чтобы его раскрыть) слетает фокус с выпадающей менюшки, и сам блок пропадает.
+        $("#stateCity-wrapper").$(byText(city)).click();
 
         //submit
         $("#submit").click();
-    }
 
-    private void dataCheck() {
+        //============================================================================
 
+        //4. проверка
         $(".table-responsive").shouldHave(text(firstName));
         $(".table-responsive").shouldHave(text(lastName));
         $(".table-responsive").shouldHave(text(userEmail));
-        $(".table-responsive").shouldHave(text("Female"));
-        $(".table-responsive").shouldHave(text("9031112233"));
+        $(".table-responsive").shouldHave(text(gender));
+        $(".table-responsive").shouldHave(text(phoneNumber));
         $(".table-responsive").shouldHave(text("31 July,1991"));
         $(".table-responsive").shouldHave(text(subjectsInput + ", " + subjectsInput2));
-        $(".table-responsive").shouldHave(text("Reading, Music"));
+        $(".table-responsive").shouldHave(text(hobby + ", " + hobby2));
         $(".table-responsive").shouldHave(text(picName));
         $(".table-responsive").shouldHave(text(currentAddress));
-        $(".table-responsive").shouldHave(text("Haryana Panipat"));
+        $(".table-responsive").shouldHave(text(state + " " + city));
     }
 }
