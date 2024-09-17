@@ -78,7 +78,6 @@ public class AutomationPracticeFormTests {
         //city
         $("#city").click();
         $("#stateCity-wrapper").$(byText(city)).click();
-
         //submit
         $("#submit").click();
 
